@@ -13,20 +13,18 @@ namespace ShoppingBasketApi.Services.Concrete
             Configuration = configuration;
         }
 
-        public async Task<ConversionRate> GetConversionRate(decimal price, string fromCurrency)
+        public async Task<double> GetConversionRate(string fromCurrency)
         {
-            var response = await _httpClient.GetFromJsonAsync<ConversionRate>(BuildConvertUrl(price, fromCurrency));
-            return response;
+            var response = await _httpClient.GetFromJsonAsync<ConversionRate>(BuildConvertUrl(fromCurrency));
+            return response.Quotes["USD" + fromCurrency];
         }
 
-        private string BuildConvertUrl(decimal price, string fromCurrency)
+        private string BuildConvertUrl(string fromCurrency)
         {
-            var url = "live" + "?access_key=" + Configuration["CurrencyLayerApi:ApiKey"]
+            return "live" + "?access_key=" + Configuration["CurrencyLayerApi:ApiKey"]
                 + "&currencies=" + fromCurrency
                 + "&to=" + "USD"
                 + "&format=" + "1";
-
-            return url;
         }
     }
 }

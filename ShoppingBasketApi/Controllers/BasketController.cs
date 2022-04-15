@@ -18,19 +18,30 @@ namespace ShoppingBasketApi.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetAvailableItems")]
+        [HttpGet("/GetAvailableItems")]
         public async Task<IActionResult> GetAvailableItems(string currency)
         {
-            var conversionRate = await priceConverter.GetConversionRate(0, currency);
-            var rate = conversionRate.Quotes["USD" + currency];
+            var rate = await priceConverter.GetConversionRate(currency);
 
             return Ok("");
         }
 
-        [HttpGet(Name = "GetUserShoppingBasket")]
-        public async Task<IActionResult> GetUserShoppingBasket(int id, string currency)
+        [HttpGet("/GetBasket")]
+        public async Task<IActionResult> GetBasket(int userId, string currency)
         {
             // call db and get basket for user id
+            return Ok("");
+        }
+
+        [HttpPatch("/AddToBasket")]
+        public async Task<IActionResult> AddToBasket(int userId, int itemId)
+        {
+            return Ok("");
+        }
+
+        [HttpPatch("/RemoveFromBasket")]
+        public async Task<IActionResult> RemoveFromBasket(int id, string itemId)
+        {
             return Ok("");
         }
     }

@@ -6,6 +6,6 @@ namespace ShoppingBasketApi.Services.Abstract
 {
     public interface IPriceConverterService
     {
-        Task<ConversionRate> GetConversionRate(decimal price, string fromCurrency);
+        Task<double> GetConversionRate(string fromCurrency);
     }
 }
