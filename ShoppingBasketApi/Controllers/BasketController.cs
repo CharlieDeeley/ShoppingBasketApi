@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ShoppingBasketApi.Models.Abstract;
+using ShoppingBasketApi.Models.Concrete;
 using ShoppingBasketApi.Services.Abstract;
 
 namespace ShoppingBasketApi.Controllers
@@ -12,10 +14,29 @@ namespace ShoppingBasketApi.Controllers
 
         private readonly ILogger<BasketController> _logger;
 
+        private IShoppingBasket shoppingBasket;
+
         public BasketController(IPriceConverterService priceConverter, ILogger<BasketController> logger)
         {
             this.priceConverter = priceConverter;
             _logger = logger;
+
+            shoppingBasket = new ShoppingBasket();
+        }
+
+        [HttpPost("/CreateBasket")]
+        public IActionResult CreateBasket()
+        {
+            try
+            {
+                var id = shoppingBasket.CreateBasket();
+
+                return Ok(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpGet("/GetAvailableItems")]
@@ -23,26 +44,57 @@ namespace ShoppingBasketApi.Controllers
         {
             var rate = await priceConverter.GetConversionRate(currency);
 
-            return Ok("");
+            var items = shoppingBasket.GetAvailableItems(rate);
+
+            return Ok(items);
         }
 
         [HttpGet("/GetBasket")]
-        public async Task<IActionResult> GetBasket(int userId, string currency)
+        public async Task<IActionResult> GetBasket(int basketId, string currency)
         {
-            // call db and get basket for user id
-            return Ok("");
+            var rate = await priceConverter.GetConversionRate(currency);
+
+            try
+            {
+                var basketItems = shoppingBasket.GetBasket(basketId, rate);
+
+                return Ok(basketItems);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+
         }
 
         [HttpPatch("/AddToBasket")]
-        public async Task<IActionResult> AddToBasket(int userId, int itemId)
+        public IActionResult AddToBasket(int basketId, int itemId)
         {
-            return Ok("");
+            try
+            {
+                shoppingBasket.AddToBasket(basketId, itemId);
+
+                return Ok("Item added to basket");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpPatch("/RemoveFromBasket")]
-        public async Task<IActionResult> RemoveFromBasket(int id, string itemId)
+        public IActionResult RemoveFromBasket(int basketId, int itemId)
         {
-            return Ok("");
+            try
+            {
+                shoppingBasket.AddToBasket(basketId, itemId);
+
+                return Ok("Item removed from basket");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
     }
 }
