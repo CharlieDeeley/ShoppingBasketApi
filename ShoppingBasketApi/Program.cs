@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using ShoppingBasketApi.Models;
 using ShoppingBasketApi.Services.Abstract;
 using ShoppingBasketApi.Services.Concrete;
 
@@ -8,6 +10,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// add in memory dbcontext
+builder.Services.AddDbContext<ShoppingBasketContext>(options => options.UseSqlServer(
+                builder.Configuration.GetConnectionString("DbConnection")));
+
+builder.Services.AddTransient<IShoppingBasketRepository, DbRepository>();
+
 // add http client for calls to CurrencyLayerApi 
 builder.Services.AddHttpClient("converter",
     client =>
@@ -17,6 +25,7 @@ builder.Services.AddHttpClient("converter",
 
 // Add Services
 builder.Services.AddScoped<IPriceConverterService, PriceConverterService>();
+builder.Services.AddScoped<IShoppingBasketService, ShoppingBasketService>();
 
 var app = builder.Build();
 

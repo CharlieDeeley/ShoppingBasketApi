@@ -7,6 +7,7 @@ namespace ShoppingBasketApi.Services.Concrete
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration Configuration;
+       
         public PriceConverterService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _httpClient = httpClientFactory.CreateClient("converter");
@@ -15,8 +16,12 @@ namespace ShoppingBasketApi.Services.Concrete
 
         public async Task<double> GetConversionRate(string fromCurrency)
         {
-            var response = await _httpClient.GetFromJsonAsync<ConversionRate>(BuildConvertUrl(fromCurrency));
-            return response.Quotes["USD" + fromCurrency];
+            var url = BuildConvertUrl(fromCurrency);
+            var response = await _httpClient.GetFromJsonAsync<ConversionRate>(url);
+
+            var rate = response.Quotes["USD" + fromCurrency];
+
+            return rate;
         }
 
         private string BuildConvertUrl(string fromCurrency)
